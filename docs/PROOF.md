@@ -68,6 +68,26 @@ RESULT: PASS - nothing gets out with the tunnel down.
 
 How to read it: after the cut, a default route to the host **still exists** (`default via 10.200.1.1`). The traffic is stopped by the `reject` rule: anything leaving by a device other than the tunnel, without the tunnel's own mark (`0xca6c`), is refused. That firewall is vopono's. Ghost Browser's part is steps 13 to 15 in the README: confirming, from inside, that this layout is really there before the browser starts.
 
+## 1b. The installer on clean machines
+
+Date: 2026-11-17. Two throwaway QEMU/KVM virtual machines from the official cloud images (checksums verified): **Debian 12** (apt 2.6.2, starts without gpg) and **Ubuntu 24.04** (apt 2.8.3). A normal user with sudo, `bash install.sh --yes`.
+
+| Check | Debian 12 | Ubuntu 24.04 |
+|---|---|---|
+| Install finishes, exit code 0 | yes | yes |
+| Installed key is byte-identical to Mullvad's published key; key and source root-owned, mode 644 | yes | yes |
+| `mullvad-browser` comes from `https://repository.mullvad.net/deb/stable` | yes | yes |
+| vopono 1.0.2 installed; `redsocks` and `openvpn` (its optional extras) **not** installed | yes | yes |
+| No root-owned temp folder left in `/tmp` | yes | yes |
+| Second run changes nothing | yes | yes |
+| Browser removed, installer run again: the existing source is recognised as the installer's own and reused | yes | yes |
+| `ghost-browser.sh --selftest`: `RESULT: plumbing PASS \| dead-tunnel PASS`, nothing left behind | yes | yes |
+| `tests.sh` | 108 passed | 108 passed after `sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0`; 72 passed + 4 groups skipped without it |
+| `install-tests.sh` | 160 passed (1 check needs `desktop-file-validate`, not installed) | 160 passed |
+| `install.sh --uninstall` removes the launcher and both menu files | yes | yes |
+
+What this run found: Ubuntu 23.10+ stops a normal user from creating the unprivileged namespaces `tests.sh` uses, so two tests failed there. The product itself is not affected (it builds its namespace through sudo, and the self-test passes). The suite now skips those cases with a note and the command to enable them.
+
 ## 2. The automated tests
 
 `bash tests.sh` (launcher, 108 checks) and `bash install-tests.sh` (installer, 161 checks). No sudo, no internet. Nothing outside temp folders is changed.
@@ -125,8 +145,7 @@ The fixes after installer round 4 were checked by tests and mutation, not by a f
 
 ## 5. Not verified, known limits, known traces
 
-- **Only one real setup** has been used: the one in section 1. No other distribution, desktop, VPN provider or CPU type has had a real launch.
-- **The installer has not been run for real on a clean machine.** It is verified by its tests and by dry runs on the development machine (where everything was already installed).
+- **Only one setup has had a real VPN launch:** the one in section 1. The clean-machine runs in section 1b had no VPN account and no desktop session, so the menu entry, the password popup and a real browser window were not exercised there.
 - **vopono's code was read, not audited.** The launcher relies on vopono 1.0.2's kill switch (`wireguard.rs`, `exec.rs`); the order (namespace, routes, tunnel + firewall, then the application) was confirmed from source and by the live test, and the version is pinned by SHA-256.
 - **Provider-synced VPN files are not opened** by the launcher (they hold your VPN key); for those, the route check inside the namespace is the guard.
 - **Not a sandbox.** The browser runs as your user and shares your desktop session (X11 or Wayland, the session D-Bus). A link handed to another running app would open outside the VPN.

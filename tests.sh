@@ -331,10 +331,14 @@ o="$(env -u DISPLAY GHOST_BROWSER_CONFIG="$W/cfg" FAKE_DIR="$W" PATH="$W/bin:$PA
 check "--dry-run prints when piped" 'would use: ' "$o"
 
 echo "== guards"
-mkdir -p "$W/dir with space"; cp -- "$W/gb.sh" "$W/dir with space/gb.sh"
-printf '%s\n' "CONFIG_DIR=$W/three" BROWSER=/bin/true > "$W/cfg"
-o="$(env -u DISPLAY GHOST_BROWSER_CONFIG="$W/cfg" FAKE_DIR="$W" PATH="$W/bin:$PATH" timeout --foreground 30 script -qec "'$W/dir with space/gb.sh'" /dev/null < /dev/null 2>&1 | tr -d '\r')"
-check "refuses to run from a path with spaces" 'ERROR: install this script in a path without spaces' "$o"
+if [[ -d $W/three ]]; then   # that folder is made by the retry cases above
+    mkdir -p "$W/dir with space"; cp -- "$W/gb.sh" "$W/dir with space/gb.sh"
+    printf '%s\n' "CONFIG_DIR=$W/three" BROWSER=/bin/true > "$W/cfg"
+    o="$(env -u DISPLAY GHOST_BROWSER_CONFIG="$W/cfg" FAKE_DIR="$W" PATH="$W/bin:$PATH" timeout --foreground 30 script -qec "'$W/dir with space/gb.sh'" /dev/null < /dev/null 2>&1 | tr -d '\r')"
+    check "refuses to run from a path with spaces" 'ERROR: install this script in a path without spaces' "$o"
+else
+    echo "SKIP  refuses to run from a path with spaces: needs the retry cases above"
+fi
 o="$(env -u DISPLAY timeout --foreground 30 script -qec "$W/gb.sh --inner /tmp/not-a-run-folder /bin/true" /dev/null < /dev/null 2>&1 | tr -d '\r')"
 check "inner refuses an odd run folder"    'ERROR: refusing odd run folder' "$o"
 # --inner called on the host's own network must never start a browser.
@@ -344,12 +348,21 @@ o="$(env -u DISPLAY timeout --foreground 30 script -qec "$W/gb.sh --inner $rd $W
 check "inner refuses the host's own network" 'ERROR: refusing to start the browser: this is not a separate VPN namespace' "$o"
 o="$(env -u DISPLAY timeout --foreground 30 script -qec "$W/gb.sh --inner $rd $W/bin/fakebrowser" /dev/null < /dev/null 2>&1 | tr -d '\r')"
 check "inner refuses a missing namespace id" 'ERROR: refusing to start the browser' "$o"
-o="$(env -u DISPLAY unshare -rm bash -c 'mount -t tmpfs none /proc && "$0" --inner "$1" "$2" "$3"' "$W/gb.sh" "$rd" "$W/bin/fakebrowser" "$hns" 2>&1 < /dev/null)"
-check "inner refuses when its namespace id cannot be read" 'ERROR: refusing to start the browser' "$o"
+if unshare -rm true 2>/dev/null; then
+    o="$(env -u DISPLAY unshare -rm bash -c 'mount -t tmpfs none /proc && "$0" --inner "$1" "$2" "$3"' "$W/gb.sh" "$rd" "$W/bin/fakebrowser" "$hns" 2>&1 < /dev/null)"
+    check "inner refuses when its namespace id cannot be read" 'ERROR: refusing to start the browser' "$o"
+else
+    echo "SKIP  inner refuses when its namespace id cannot be read: 'unshare -rm' is not allowed on this system"
+fi
 rm -rf -- "${rd:?}"
 
 left="$(comm -13 <(printf '%s\n' "$runs_before") <(ls -d "$RB"/ghost-browser.* 2>/dev/null | sort) | grep -v '^$')"
 check_not "no RAM folders left behind by the tests" '.' "$left"
 
+if ! unshare -rn true 2>/dev/null; then
+    echo "NOTE  some cases were skipped: this system does not let a normal user make test namespaces (Ubuntu 23.10+"
+    echo "      restricts them with AppArmor). To run them all, until the next reboot:"
+    echo "        sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0"
+fi
 echo "== $pass passed, $failed failed"
 [[ $failed -eq 0 ]]

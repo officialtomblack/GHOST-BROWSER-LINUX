@@ -102,7 +102,7 @@ Anyone can write "no leaks" in a README. Here's what was actually done, and you 
 
 **5. It was attacked before you saw it.** The launcher and the installer each went through repeated rounds of independent review, where one reviewer hunts for a hole and a second, sceptical one has to reproduce it before it counts. 150 confirmed findings were fixed, including two critical ones in the installer's first drafts. The details, including the embarrassing ones, are in [docs/PROOF.md](docs/PROOF.md).
 
-Run it yourself:
+Run it yourself (on Ubuntu 23.10 or newer, `tests.sh` skips its namespace cases unless you lift Ubuntu's restriction first; it prints the one command):
 
 ```bash
 bash tests.sh                  # launcher: 108 checks, ~25 s, no sudo, no internet
@@ -162,7 +162,7 @@ Security tools that overclaim get people hurt. Read this part.
 - **One small trace while it's open.** Mullvad Browser keeps an empty lock file in `/tmp` while it runs. It holds no browsing data and is removed on close, but after a crash it would stay, and its timestamp shows when the browser was started.
 - **Logging in is logging in.** Sign in to an account and that site knows it's you, whatever your address is.
 - **A stock browser only stays stock if you leave it alone.** Resize the window, add extensions or change settings and you stand out from other Mullvad Browser users. (The next launch is stock again.)
-- **Tested on one setup so far.** Real launches, the kill-switch cut and the exit check were run on Linux Mint 22 with NordVPN over WireGuard, vopono 1.0.2 and Mullvad Browser 16.0.1. The installer is verified by its tests and by dry runs on that machine; a from-scratch install on a clean machine has not been done yet. If you try it elsewhere, [open an issue](../../issues) and say how it went.
+- **Where it has been tested.** Real VPN launches, the kill-switch cut and the exit check: Linux Mint 22 with NordVPN over WireGuard, vopono 1.0.2 and Mullvad Browser 16.0.1. The installer, the self-test (a real sealed network with a dead tunnel) and the uninstall: clean Debian 12 and Ubuntu 24.04 virtual machines. Not yet tried: other VPN providers on a real launch, other desktops, other Linux families. If you try it elsewhere, [open an issue](../../issues) and say how it went.
 
 ---
 
