@@ -1,0 +1,24 @@
+<svg viewBox="0 0 680 200" width="680" height="200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GHOST BROWSER: opens sealed, lives in RAM, leaves nothing. Linux only.">
+<defs>
+<radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#55F5A0" stop-opacity="0.20"/><stop offset="100%" stop-color="#55F5A0" stop-opacity="0"/></radialGradient>
+<clipPath id="g"><path d="M80 152 V92 a40 40 0 0 1 80 0 V152 l-13 -12 l-13 12 l-14 -12 l-14 12 l-13 -12 Z"/></clipPath>
+<pattern id="scan" width="6" height="5" patternUnits="userSpaceOnUse"><rect width="6" height="1.6" fill="#55F5A0" fill-opacity="0.55"/></pattern>
+</defs>
+<rect x="1" y="1" width="678" height="198" rx="22" fill="#060A08" stroke="#17261D"/>
+<circle cx="120" cy="100" r="96" fill="url(#glow)"/>
+<!-- the sealed room -->
+<rect x="56" y="30" width="128" height="140" rx="10" fill="none" stroke="#4A6B5A" stroke-dasharray="4 4"/>
+<!-- the ghost: made of scan lines, fading in and out -->
+<g><animate attributeName="opacity" values="1;1;0.25;1" keyTimes="0;0.6;0.8;1" dur="5s" repeatCount="indefinite"/>
+<g clip-path="url(#g)"><rect x="76" y="48" width="88" height="108" fill="url(#scan)"/>
+<rect x="76" y="48" width="88" height="10" fill="#55F5A0" fill-opacity="0.35"><animate attributeName="y" values="48;146;48" dur="4s" repeatCount="indefinite"/></rect></g>
+<path d="M80 152 V92 a40 40 0 0 1 80 0 V152 l-13 -12 l-13 12 l-14 -12 l-14 12 l-13 -12 Z" fill="none" stroke="#55F5A0" stroke-width="1.6"/>
+<circle cx="106" cy="92" r="6" fill="#060A08" stroke="#55F5A0" stroke-width="1.4"/><circle cx="134" cy="92" r="6" fill="#060A08" stroke="#55F5A0" stroke-width="1.4"/>
+</g>
+<g font-family="monospace" font-size="9" fill="#4A6B5A"><text x="62" y="24">sealed network</text><text x="62" y="184">RAM only</text></g>
+<text x="232" y="88" font-family="monospace" font-size="42" font-weight="bold" fill="#55F5A0" letter-spacing="4">GHOST BROWSER</text>
+<rect x="614" y="54" width="16" height="36" fill="#55F5A0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.1s" repeatCount="indefinite"/></rect>
+<text x="234" y="120" font-family="monospace" font-size="12" fill="#9FB5AA" letter-spacing="1.5">OPENS SEALED. LIVES IN RAM. LEAVES NOTHING.</text>
+<line x1="234" y1="134" x2="624" y2="134" stroke="#17261D"/>
+<text x="234" y="156" font-family="monospace" font-size="11" fill="#4DA6FF" letter-spacing="1.2">LINUX ONLY · VPN-ONLY NETWORK · KILL SWITCH FIRST</text>
+</svg>

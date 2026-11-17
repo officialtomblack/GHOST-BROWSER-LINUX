@@ -1,0 +1,18 @@
+$ bash tests.sh                       # no password, no internet, about 25 seconds
+== safety checks (split-tunnel VPN files, OpenVPN as root, temp files on disk)
+PASS  VPN file: refused: wg-halfpair
+PASS  VPN file: refused: wg-lookalike
+PASS  VPN file: refused: wg-twopeers
+  ... 80 more checks
+PASS  route check (split): stops with SECURITY
+PASS  route check (split): the browser never started
+PASS  route check (split): no second server tried
+PASS  RAM: TMPDIR is in the RAM run folder
+PASS  RAM: HOME is in the RAM run folder
+== guards
+PASS  inner refuses the host's own network
+PASS  inner refuses when its namespace id cannot be read
+PASS  no RAM folders left behind by the tests
+== 108 passed, 0 failed
+$ bash install-tests.sh               # the installer, on fake systems
+161 passed, 0 failed

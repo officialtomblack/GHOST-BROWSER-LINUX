@@ -1,0 +1,8 @@
+$ ghost-browser.sh --check            # no browser: just prove where traffic comes out
+[ghost-browser] host (outside the namespace) exits as: 198.51.100.32
+[ghost-browser] namespace: NordVPN / united_states-us-us14355 (host egress: nordlynx)
+[ghost-browser] namespace: vo_gbb7de95
+vo_gbb7de95      UNKNOWN        10.5.0.2/32            # the tunnel
+vo_gbb7de95_s    UP             10.200.1.2/24          # the cable to your computer (firewalled)
+{"ip":"203.0.113.126","country":"United States","city":"New York"}
+[ghost-browser] PASS exit: namespace exits as 203.0.113.126, not the host's 198.51.100.32

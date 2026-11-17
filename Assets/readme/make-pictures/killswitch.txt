@@ -1,0 +1,13 @@
+$ sudo bash killswitch-test.sh        # run while Ghost Browser is open
+== namespace vo_gb7e251d, tunnel interface vo_gb7e251d
+== firewall inside the namespace
+    oifname != "vo_gb7e251d" meta mark != 0x0000ca6c fib daddr type != local  reject
+  ... IPv6: every chain policy drop
+== BEFORE the cut
+exit IP seen by the internet: 203.0.113.59        # the VPN's address, not yours
+direct 1.1.1.1: REACHED
+== tunnel vo_gb7e251d is now DOWN                 # what a dropped VPN looks like
+== AFTER the cut
+curl: (6) Could not resolve host: am.i.mullvad.net
+direct 1.1.1.1: no answer
+RESULT: PASS - nothing gets out with the tunnel down.
